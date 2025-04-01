@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # TODO: Update action name
       - uses: IhorMuliar/setup-anchor@v1
       - run: anchor build
         shell: bash
@@ -25,7 +24,6 @@ This will use the default versions of Node.js, the Solana CLI tools and Anchor, 
 ```yaml
 steps:
   - uses: actions/checkout@v4
-  # TODO: Update action name
   - uses: IhorMuliar/setup-anchor@v1
     with:
       node-version: '22.14.0'
