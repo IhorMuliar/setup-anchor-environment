@@ -1,0 +1,118 @@
+name: 'Setup Anchor using cargo'
+author: 'Ihor Muliar'
+description: 'Install Node.js, Solana CLI tools and Anchor using cargo.'
+
+branding:
+  icon: anchor
+  color: blue
+
+inputs:
+  node-version:
+    description: 'Version of Node.js to use'
+    required: false
+    default: '22.14.0' # LTS
+  solana-cli-version:
+    description: 'Version of Solana CLI to use'
+    required: false
+    default: '2.2.3' 
+  anchor-version:
+    description: 'Version of Anchor to use'
+    required: false
+    default: '0.31.0'
+  workspace-dir:
+    description: 'Anchor workspace directory'
+    required: false
+    default: '.'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'yarn'
+        cache-dependency-path: ${{ inputs.workspace-dir }}/yarn.lock
+    
+    - name: Install Node.js dependencies
+      run: |
+        cd ${{ inputs.workspace-dir }}
+        yarn install --frozen-lockfile
+      shell: bash
+
+    - name: Cache Rust dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          ~/.cargo/.crates.toml
+          ~/.cargo/.crates2.json
+          ${{ inputs.workspace-dir }}/target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('${{ inputs.workspace-dir }}/**/Cargo.lock', '${{ inputs.workspace-dir }}/**/Cargo.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo
+
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+        components: rustfmt, clippy
+
+    - name: Cache Solana CLI tools
+      id: cache-solana
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/solana/
+          ~/.local/share/solana/
+          ~/.config/solana/
+        key: solana-cli-${{ runner.os }}-build-${{ inputs.solana-cli-version }}
+
+    - name: Install Solana CLI tools
+      if: steps.cache-solana.outputs.cache-hit != 'true'
+      run: sh -c "$(curl -sSfL https://release.anza.xyz/v${{ inputs.solana-cli-version }}/install)"
+      shell: bash
+
+    - name: Update PATH
+      run: echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+      shell: bash
+    
+    - name: Cache Anchor CLI
+      id: cache-anchor
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.avm
+          ~/.cargo/bin/anchor
+          ~/.cargo/bin/avm
+        key: anchor-cli-${{ runner.os }}-${{ inputs.anchor-version }}
+
+    - name: Install Anchor CLI
+      if: steps.cache-anchor.outputs.cache-hit != 'true'
+      run: |
+        cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
+        avm install ${{ inputs.anchor-version }}
+        avm use ${{ inputs.anchor-version }}
+      shell: bash
+
+    - name: Verify installations
+      run: |
+        echo "Verifying Node.js installation..."
+        node --version
+        
+        echo "Verifying Solana CLI installation..."
+        solana --version
+        
+        echo "Verifying Anchor installation..."
+        anchor --version
+        
+        echo "Verifying workspace configuration..."
+        cd ${{ inputs.workspace-dir }}
+        if [ -f "Anchor.toml" ]; then
+          echo "Anchor.toml found in workspace"
+        else
+          echo "Warning: Anchor.toml not found in specified workspace"
+        fi
+      shell: bash
