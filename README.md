@@ -28,9 +28,9 @@ steps:
   # TODO: Update action name
   - uses: /setup-anchor
     with:
-      anchor-version: '0.30.1'
-      solana-cli-version: '1.18.18'
-      node-version: '20.16.0'
+      node-version: '22.14.0'
+      solana-cli-version: '2.2.3'
+      anchor-version: '0.31.0'
 ```
 
 ## License
