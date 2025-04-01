@@ -1,4 +1,4 @@
-# Setup Anchor using cargo
+# Setup Anchor environment
 
 An optimized action for installing [Anchor](https://www.anchor-lang.com/).
 

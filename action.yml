@@ -1,4 +1,4 @@
-name: 'Setup Anchor using cargo'
+name: 'Setup Anchor environment'
 author: 'Ihor Muliar'
 description: 'Install Node.js, Solana CLI tools and Anchor using cargo.'
 
