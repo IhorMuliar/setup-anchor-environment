@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # TODO: Update action name
-      - uses: /setup-anchor
+      - uses: IhorMuliar/setup-anchor@v1
       - run: anchor build
         shell: bash
 ```
@@ -26,11 +26,12 @@ This will use the default versions of Node.js, the Solana CLI tools and Anchor, 
 steps:
   - uses: actions/checkout@v4
   # TODO: Update action name
-  - uses: /setup-anchor
+  - uses: IhorMuliar/setup-anchor@v1
     with:
       node-version: '22.14.0'
       solana-cli-version: '2.2.3'
       anchor-version: '0.31.0'
+      workspace-dir: 'app'
 ```
 
 ## License
