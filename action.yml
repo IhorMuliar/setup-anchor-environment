@@ -97,6 +97,11 @@ runs:
         avm use ${{ inputs.anchor-version }}
       shell: bash
 
+    - name: Update PATH
+      run: |
+        echo "~/.cargo/bin" >> $GITHUB_PATH
+      shell: bash
+
     - name: Verify installations
       run: |
         echo "Verifying Node.js installation..."
