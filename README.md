@@ -19,7 +19,7 @@ jobs:
         shell: bash
 ```
 
-This will use the default versions of Node.js, the Solana CLI tools and Anchor, which are 22.14.0, 2.2.3, and 0.31.0 respectively. You can also configure these versions like so:
+This will use the default versions of Node.js, the Solana CLI tools and Anchor, which are 22.14.0, 2.2.3, and 0.31.1 respectively. You can also configure these versions like so:
 
 ```yaml
 steps:
