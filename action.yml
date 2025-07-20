@@ -60,6 +60,12 @@ runs:
         override: true
         components: rustfmt, clippy
 
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libudev-dev pkg-config
+      shell: bash
+
     - name: Cache Solana CLI tools
       id: cache-solana
       uses: actions/cache@v4
