@@ -101,11 +101,15 @@ runs:
         cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
         avm install ${{ inputs.anchor-version }}
         avm use ${{ inputs.anchor-version }}
+        echo "Anchor installation completed"
+        echo "Checking if anchor binary exists:"
+        ls -la $HOME/.cargo/bin/anchor || echo "Anchor binary not found in cargo bin"
+        echo "Current PATH: $PATH"
       shell: bash
 
     - name: Update PATH
       run: |
-        echo "~/.cargo/bin" >> $GITHUB_PATH
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
       shell: bash
 
     - name: Verify installations
@@ -117,7 +121,14 @@ runs:
         solana --version
         
         echo "Verifying Anchor installation..."
-        anchor --version
+        echo "Current PATH: $PATH"
+        echo "Checking for anchor in various locations:"
+        which anchor || echo "anchor not found in PATH"
+        ls -la $HOME/.cargo/bin/anchor || echo "anchor not in cargo bin"
+        ls -la ~/.avm/anchor-${{ inputs.anchor-version }}/anchor || echo "anchor not in avm"
+        
+        # Try to run anchor with full path
+        $HOME/.cargo/bin/anchor --version || echo "Failed to run anchor from cargo bin"
         
         echo "Verifying workspace configuration..."
         cd ${{ inputs.workspace-dir }}
